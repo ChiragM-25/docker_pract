@@ -2,14 +2,14 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Create a non-root user for security & Change ownership to non-root user
-RUN addgroup -g 1000 appuser && \
-    adduser -D -u 1000 -G appuser appuser && \
+# Create a non-root user for security
+RUN addgroup appuser && \
+    adduser -D -G appuser appuser && \
     chown -R appuser:appuser /app
 
 # Copy package files first for better layer caching
 COPY package*.json .
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Copy application code
 COPY app.js .
