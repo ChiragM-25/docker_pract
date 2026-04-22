@@ -9,7 +9,7 @@ RUN addgroup appuser && \
 
 # Copy package files first for better layer caching
 COPY package*.json .
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Copy application code
 COPY app.js .
