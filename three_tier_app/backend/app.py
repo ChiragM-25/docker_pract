@@ -97,3 +97,8 @@ def delete_user(user_id: int):
     cache.delete("users")
 
     return {"message": "deleted"}
+
+#healthcheck endpoint
+@app.get("/")
+def health():
+    return {"status": "ok"}
