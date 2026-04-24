@@ -1,0 +1,49 @@
+name: three_tier_app
+
+services:
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: nginx_proxy
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - backend
+    networks:
+      - app_net
+
+  backend:
+    build:
+      context: ./backend
+    image: three-tier/backend:v1
+    container_name: fastapi_backend
+    environment:
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: appdb
+    depends_on:
+      - db
+    networks:
+      - app_net
+
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: appdb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    driver: bridge
+
+volumes:
+  db_data:
