@@ -9,6 +9,7 @@ services:
       - "8080:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    restart: unless-stopped
     depends_on:
       - backend
     networks:
@@ -19,6 +20,7 @@ services:
       context: ./backend
     image: three-tier/backend:v1
     container_name: fastapi_backend
+    restart: unless-stopped
     environment:
       DB_HOST: db
       DB_USER: postgres
@@ -43,7 +45,10 @@ services:
 
 networks:
   app_net:
+    name: app_net
     driver: bridge
 
 volumes:
   db_data:
+    name: app_db_data
+    driver: local
