@@ -1,0 +1,53 @@
+name: ip_apps
+
+services:
+  fastapi_app:
+    build:
+      context: ./fast_api
+    image: ipapps/fastapi:latest
+    container_name: fast_api_app
+    ports:
+      - "8080:5000"
+    environment:
+      TEST_ENV: "prod"
+      TEST_2: "test_2_value"
+    networks:
+      - ip_app_bridge
+    volumes:
+      - /home/ubuntu/compose/data/fast_api:/app
+
+  flask_app:
+    build:
+      context: ./flask
+    image: ipapps/flask:latest
+    container_name: flask_app
+    ports:
+      - "8081:5000"
+    environment:
+      TEST_ENV: "prod"
+      TEST_2: "test_2_value"
+    networks:
+      - ip_app_bridge
+
+  nodejs_app:
+    build:
+      context: ./node_js
+    image: ipapps/nodejs:latest
+    container_name: nodejs_app
+    ports:
+      - "8082:3000"
+    environment:
+      TEST_ENV: "prod"
+      TEST_2: "test_2_value"
+    networks:
+      - ip_app_bridge
+
+networks:
+  ip_app_bridge:
+    name: ip_app_bridge
+    driver: bridge
+
+volumes:
+  fastapi_data:
+    name: ip_app_fastapi_data
+    driver: local
