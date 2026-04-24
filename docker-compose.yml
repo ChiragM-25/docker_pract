@@ -14,7 +14,7 @@ services:
     networks:
       - ip_app_bridge
     volumes:
-      - /home/ubuntu/compose/data/fast_api:/app
+      - fastapi_data:/app
 
   flask_app:
     build:
