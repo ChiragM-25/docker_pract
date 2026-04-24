@@ -11,7 +11,8 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     restart: unless-stopped
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - app_net
 
@@ -19,7 +20,6 @@ services:
     build:
       context: ./backend
     image: three-tier/backend:v1
-    container_name: fastapi_backend
     restart: unless-stopped
     environment:
       DB_HOST: db
@@ -27,9 +27,15 @@ services:
       DB_PASSWORD: postgres
       DB_NAME: appdb
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - app_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   db:
     image: postgres:15-alpine
@@ -42,6 +48,11 @@ services:
       - db_data:/var/lib/postgresql/data
     networks:
       - app_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   app_net:
